@@ -1,0 +1,74 @@
+
+CREATE DATABASE dbAracAlisSatis  
+DEFAULT CHARACTER SET utf8 
+DEFAULT COLLATE utf8_general_ci;
+
+
+GRANT ALL PRIVILEGES ON dbAracAlisSatis.* To 'dbAASKullanici'@'localhost' IDENTIFIED BY 'dbAASKullaniciSifre'
+
+
+use dbAracAlisSatis;
+
+CREATE TABLE Tbl_Sehir (
+SehirID INT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+Sehir VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Tbl_Renk (
+RenkID INT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+Renk VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Tbl_VitesTuru (
+VitesTuruID INT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+Vites_Turu VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Tbl_YakitTuru (
+YakitTuruID INT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+Yakit_Turu VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Tbl_Araba (
+ArabaID INT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+Araba_Marka VARCHAR(50) NOT NULL,
+Araba_Model VARCHAR(50) NOT NULL,
+Araba_VitesTuruID INT(5) UNSIGNED,
+Araba_YakitTuruID INT(5) UNSIGNED,
+Araba_RenkID INT(5) UNSIGNED,
+FOREIGN KEY (Araba_VitesTuruID) REFERENCES dbAracAlisSatis.Tbl_VitesTuru(VitesTuruID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+FOREIGN KEY (Araba_YakitTuruID) REFERENCES dbAracAlisSatis.Tbl_YakitTuru(YakitTuruID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+FOREIGN KEY (Araba_RenkID) REFERENCES dbAracAlisSatis.Tbl_Renk(RenkID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE Tbl_Ilan (
+IlanID INT(5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+Ilan_Adi VARCHAR(50) NOT NULL,
+Ilan_Fiyat DOUBLE(40,2) NOT NULL,
+Ilan_Km DOUBLE(40,2) NOT NULL,
+Ilan_Tarih DATE NOT NULL,
+Ilan_ArabaID INT(5) UNSIGNED,
+Ilan_SehirID INT(5) UNSIGNED,
+FOREIGN KEY (Ilan_ArabaID) REFERENCES dbAracAlisSatis.Tbl_Araba(ArabaID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+FOREIGN KEY (Ilan_SehirID) REFERENCES dbAracAlisSatis.Tbl_Sehir(SehirID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+SELECT i.*, s.*, a.*, r.*, v.*, y.* 
+FROM Tbl_Ilan i 
+	LEFT JOIN Tbl_Sehir s on s.SehirID = i.Ilan_SehirID
+	LEFT JOIN Tbl_Araba a ON a.ArabaID = i.Ilan_ArabaID
+	LEFT JOIN Tbl_Renk r on r.RenkID = a.Araba_RenkID
+	LEFT JOIN Tbl_VitesTuru v on v.VitesTuruID = a.Araba_VitesTuruID
+	LEFT JOIN Tbl_YakitTuru y on y.YakitTuruID = a.Araba_YakitTuruID	
+
+
